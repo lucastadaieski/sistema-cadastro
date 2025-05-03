@@ -1,4 +1,4 @@
-package lucastadaieski.sistema_cadastro.entity;
+package lucastadaieski.sistema_cadastro.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,13 +16,10 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "nome")
     private  String nome;
-
-    @Column(name = "tipo")
-    private  String tipo;
 
     @Column(name = "email")
     private  String email;
@@ -32,5 +29,9 @@ public class Usuario {
 
     @Column(name = "endereco")
     private  String endereco;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_usuario")
+    private TipoUsuario tipo;
 
 }

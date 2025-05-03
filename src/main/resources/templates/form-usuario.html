@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Usuário</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100 p-8">
+
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Cadastrar Usuário</h1>
+
+    <form th:action="@{/usuarios/salvar}" th:object="${usuario}" method="post" class="space-y-4">
+
+        <div>
+            <label class="block font-medium">Nome</label>
+            <input th:field="*{nome}" class="w-full border p-2 rounded" type="text" required />
+        </div>
+
+        <div>
+            <label class="block font-medium">Email</label>
+            <input th:field="*{email}" class="w-full border p-2 rounded" type="email" />
+        </div>
+
+        <div>
+            <label class="block font-medium">Telefone</label>
+            <input th:field="*{telefone}" class="w-full border p-2 rounded" type="text" />
+        </div>
+
+        <div>
+            <label class="block font-medium">Endereço</label>
+            <input th:field="*{endereco}" class="w-full border p-2 rounded" type="text" />
+        </div>
+
+        <div>
+            <label class="block font-medium">Tipo de Usuário</label>
+            <select th:field="*{tipo}" class="w-full border p-2 rounded">
+                <option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${tipo}">Tipo</option>
+            </select>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
+        </div>
+
+        <input type="hidden" th:field="*{id}" />
+    </form>
+
+    <div class="mt-4">
+        <a th:href="@{/usuarios}" class="text-blue-600 hover:underline">← Voltar para lista</a>
+    </div>
+</div>
+
+</body>
+</html>
