@@ -1,8 +1,15 @@
 package lucastadaieski.sistema_cadastro.controller;
 
+import lucastadaieski.sistema_cadastro.factory.UsuarioAdministradorFactory;
+import lucastadaieski.sistema_cadastro.factory.UsuarioComumFactory;
+import lucastadaieski.sistema_cadastro.factory.UsuarioFactory;
+import lucastadaieski.sistema_cadastro.model.BuilderUsuario;
 import lucastadaieski.sistema_cadastro.model.TipoUsuario;
 import lucastadaieski.sistema_cadastro.model.Usuario;
+import lucastadaieski.sistema_cadastro.model.UsuarioComum;
 import lucastadaieski.sistema_cadastro.repository.UsuarioRepository;
+import lucastadaieski.sistema_cadastro.singleton.RepositorioUsuarios;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,20 +33,35 @@ public class UsuarioController {
 
     @GetMapping("/novo")
     public String  exibirFormulario(Model model){
-        model.addAttribute("usuario", new Usuario());
+        model.addAttribute("usuario", new UsuarioComum());
         model.addAttribute("tipos", TipoUsuario.values());
         return "form-usuario";
     }
 
     @PostMapping("/salvar")
-    public String salvarUsuario(Usuario usuario){
+    public String salvarUsuario(@ModelAttribute UsuarioComum usuario){
+        BuilderUsuario builder = new BuilderUsuario()
+                .setNome(usuario.getNome())
+                .setEmail(usuario.getEmail())
+                .setTelefone(usuario.getTelefone())
+                .setEndereco(usuario.getEndereco());
+
+        UsuarioFactory factory = usuario.getTipo() == TipoUsuario.ADMINISTRADOR
+                ? new UsuarioAdministradorFactory()
+                : new UsuarioComumFactory();
+
+        Usuario novoUsuario = factory.criarUsuario(builder);
+
+        RepositorioUsuarios.getInstancia().adicionar(novoUsuario);
+
         usuarioRepository.save(usuario);
+
         return "redirect:/usuarios";
     }
 
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable Long id, Model model) {
-        Usuario usuario = usuarioRepository.findById(id)
+        UsuarioComum usuario = (UsuarioComum) usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
 
         model.addAttribute("usuario", usuario);
@@ -57,7 +79,7 @@ public class UsuarioController {
     public String buscarUsuarios(@RequestParam("termo") String termo, Model model) {
         List<Usuario> resultados;
 
-        if (termo.matches("\\d+")) { // se for número, buscar por ID
+        if(termo.matches("\\d+")){
             Optional<Usuario> usuario = usuarioRepository.findById(Long.parseLong(termo));
             resultados = usuario.map(List::of).orElse(List.of());
         } else {
@@ -67,5 +89,4 @@ public class UsuarioController {
         model.addAttribute("usuarios", resultados);
         return "lista-usuarios";
     }
-
 }
