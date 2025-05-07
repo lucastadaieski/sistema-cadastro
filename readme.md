@@ -50,4 +50,3 @@ cd sistema-cadastro
 
 ---
 ## Diagrama de Classes
-![img.png](img.png)
